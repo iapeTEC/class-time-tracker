@@ -12,21 +12,19 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0b0f19;
-      --surface: #131a2a;
-      --surface-2: #1b2438;
+      --bg: #090d16;
+      --surface: #121826;
+      --surface-2: #1a2234;
       --border: rgba(255, 255, 255, 0.09);
-      --border-active: rgba(56, 189, 248, 0.75);
+      --border-active: rgba(56, 189, 248, 0.78);
       --text: #f8fafc;
       --text-muted: #94a3b8;
-      --text-dim: #64748b;
       --accent: #38bdf8;
       --emerald: #10b981;
       --indigo: #6366f1;
       --amber: #f59e0b;
       --rose: #f43f5e;
-      --purple: #a855f7;
-      --radius: 16px;
+      --radius: 14px;
       --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
     }
@@ -42,22 +40,22 @@
       background-color: var(--bg);
       color: var(--text);
       font-family: var(--font-sans);
-      line-height: 1.45;
-      padding-bottom: 96px;
+      line-height: 1.4;
+      padding-bottom: 40px;
       min-height: 100dvh;
       overflow-x: hidden;
     }
 
-    /* STICKY TOP HUD */
+    /* COMPACT STICKY TOP HUD (SPLIT-SCREEN FRIENDLY) */
     .top-hud {
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(11, 15, 25, 0.88);
+      background: rgba(9, 13, 22, 0.92);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
-      padding: 12px 14px 10px;
+      padding: 8px 12px 8px;
     }
 
     .hud-inner {
@@ -70,27 +68,31 @@
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
     .brand-title {
       display: flex;
       flex-direction: column;
+      min-width: 0;
     }
 
     .brand-title .tag {
-      font-size: 10px;
-      font-weight: 700;
+      font-size: 9.5px;
+      font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       color: var(--accent);
     }
 
     .brand-title h1 {
-      font-size: 15px;
+      font-size: 13.5px;
       font-weight: 800;
       letter-spacing: -0.02em;
       color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .clock-pill {
@@ -99,18 +101,18 @@
       gap: 6px;
       background: var(--surface-2);
       border: 1px solid rgba(255, 255, 255, 0.12);
-      padding: 6px 11px;
+      padding: 4px 10px;
       border-radius: 999px;
       font-family: var(--font-mono);
-      font-size: 15px;
+      font-size: 13.5px;
       font-weight: 800;
       color: #fff;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      flex-shrink: 0;
     }
 
     .live-dot {
-      width: 8px;
-      height: 8px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
       background: var(--emerald);
       box-shadow: 0 0 8px var(--emerald);
@@ -122,6 +124,12 @@
       box-shadow: 0 0 8px var(--amber);
     }
 
+    .live-dot.paused {
+      background: var(--rose);
+      box-shadow: 0 0 8px var(--rose);
+      animation: none;
+    }
+
     @keyframes pulseDot {
       0%, 100% { transform: scale(1); opacity: 1; }
       50% { transform: scale(1.35); opacity: 0.55; }
@@ -131,13 +139,13 @@
     .hud-active-banner {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 8px 11px;
+      border-radius: 10px;
+      padding: 6px 10px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 8px;
+      gap: 8px;
+      margin-bottom: 6px;
       position: relative;
       overflow: hidden;
     }
@@ -146,7 +154,7 @@
       position: absolute;
       inset: 0 auto 0 0;
       width: 0%;
-      background: linear-gradient(90deg, rgba(56, 189, 248, 0.16), rgba(16, 185, 129, 0.22));
+      background: linear-gradient(90deg, rgba(56, 189, 248, 0.18), rgba(16, 185, 129, 0.24));
       transition: width 0.3s linear;
       pointer-events: none;
     }
@@ -159,7 +167,7 @@
     }
 
     .hud-active-label {
-      font-size: 10px;
+      font-size: 9.5px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.06em;
@@ -168,7 +176,7 @@
     }
 
     .hud-active-title {
-      font-size: 12.5px;
+      font-size: 12px;
       font-weight: 700;
       color: #fff;
       white-space: nowrap;
@@ -180,12 +188,12 @@
       position: relative;
       z-index: 1;
       font-family: var(--font-mono);
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 800;
       color: var(--accent);
-      background: rgba(11, 15, 25, 0.75);
-      padding: 4px 9px;
-      border-radius: 8px;
+      background: rgba(9, 13, 22, 0.8);
+      padding: 3px 8px;
+      border-radius: 7px;
       border: 1px solid rgba(56, 189, 248, 0.3);
       flex-shrink: 0;
     }
@@ -193,10 +201,9 @@
     /* CONTROLS & DAY TABS */
     .controls-row {
       display: flex;
-      gap: 6px;
+      gap: 5px;
       overflow-x: auto;
       scrollbar-width: none;
-      padding-bottom: 2px;
     }
     .controls-row::-webkit-scrollbar { display: none; }
 
@@ -204,13 +211,12 @@
       background: var(--surface);
       color: var(--text-muted);
       border: 1px solid var(--border);
-      padding: 6px 11px;
-      border-radius: 9px;
-      font-size: 11.5px;
+      padding: 5px 9px;
+      border-radius: 8px;
+      font-size: 11px;
       font-weight: 700;
       white-space: nowrap;
       cursor: pointer;
-      transition: all 0.18s ease;
     }
 
     .day-tab.active {
@@ -221,8 +227,8 @@
 
     .mode-bar {
       max-width: 560px;
-      margin: 10px auto 0;
-      padding: 0 14px;
+      margin: 8px auto 0;
+      padding: 0 12px;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
@@ -237,7 +243,7 @@
       padding: 6px 10px;
       border-radius: 8px;
       font-size: 11px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -246,11 +252,24 @@
     }
 
     .btn-chip:active {
-      transform: scale(0.97);
+      transform: scale(0.96);
     }
 
-    .btn-chip.active-sim {
-      background: rgba(245, 158, 11, 0.18);
+    .btn-chip.btn-play {
+      background: rgba(56, 189, 248, 0.14);
+      color: #7dd3fc;
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+
+    .btn-chip.btn-stop {
+      background: rgba(244, 63, 94, 0.24);
+      color: #fda4af;
+      border-color: rgba(244, 63, 94, 0.7);
+      font-weight: 800;
+    }
+
+    .btn-chip.btn-pause {
+      background: rgba(245, 158, 11, 0.2);
       color: #fcd34d;
       border-color: rgba(245, 158, 11, 0.55);
     }
@@ -264,22 +283,22 @@
     /* MAIN TIMELINE CONTAINER */
     .container {
       max-width: 560px;
-      margin: 10px auto 0;
-      padding: 0 14px;
+      margin: 8px auto 0;
+      padding: 0 12px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
 
     .block-divider {
       display: flex;
       align-items: center;
       gap: 10px;
-      margin: 6px 0 2px;
+      margin: 4px 0 0;
     }
 
     .block-divider span {
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.08em;
@@ -294,7 +313,7 @@
       background: var(--border);
     }
 
-    /* STAGE BAR CARD (PROGRESSIVE FILL IN BACKGROUND) */
+    /* STAGE BAR CARD */
     .stage-bar {
       position: relative;
       background: var(--surface);
@@ -302,10 +321,9 @@
       border-radius: var(--radius);
       overflow: hidden;
       transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
     }
 
-    /* Background Fill Element */
     .stage-fill {
       position: absolute;
       top: 0;
@@ -317,7 +335,6 @@
       transition: width 0.35s linear;
     }
 
-    /* Phase color themes for the progressive fill */
     .stage-bar[data-phase="activation"] .stage-fill {
       background: linear-gradient(90deg, rgba(56, 189, 248, 0.20), rgba(56, 189, 248, 0.34));
     }
@@ -337,27 +354,24 @@
       background: linear-gradient(90deg, rgba(148, 163, 184, 0.16), rgba(148, 163, 184, 0.28));
     }
 
-    /* Leading edge glow on active bar fill */
     .stage-bar.is-active .stage-fill {
-      border-right: 2.5px solid rgba(255, 255, 255, 0.75);
+      border-right: 2.5px solid rgba(255, 255, 255, 0.8);
       box-shadow: 4px 0 18px rgba(56, 189, 248, 0.35);
     }
 
-    /* State Styles: Active, Completed, Upcoming */
     .stage-bar.is-active {
       border-color: var(--border-active);
-      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.25), 0 10px 28px rgba(0, 0, 0, 0.45);
-      transform: scale(1.008);
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.25), 0 8px 24px rgba(0, 0, 0, 0.45);
     }
 
     .stage-bar.is-active[data-phase="wrapup"] {
       border-color: rgba(244, 63, 94, 0.85);
-      box-shadow: 0 0 0 1px rgba(244, 63, 94, 0.35), 0 10px 28px rgba(244, 63, 94, 0.22);
+      box-shadow: 0 0 0 1px rgba(244, 63, 94, 0.35), 0 8px 24px rgba(244, 63, 94, 0.22);
     }
 
     .stage-bar.is-done {
       border-color: rgba(16, 185, 129, 0.35);
-      opacity: 0.86;
+      opacity: 0.85;
     }
 
     .stage-bar.is-done .stage-fill {
@@ -368,18 +382,17 @@
     .stage-content {
       position: relative;
       z-index: 1;
-      padding: 13px 14px 11px;
+      padding: 11px 12px 10px;
       display: flex;
       flex-direction: column;
-      gap: 9px;
+      gap: 7px;
     }
 
-    /* TOP OF BAR: DELIMITED TIME WINDOW + PHASE BADGE */
     .bar-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
+      gap: 6px;
       flex-wrap: wrap;
     }
 
@@ -387,32 +400,32 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(11, 15, 25, 0.82);
+      background: rgba(9, 13, 22, 0.82);
       border: 1px solid rgba(255, 255, 255, 0.15);
-      padding: 4px 10px;
-      border-radius: 8px;
+      padding: 3px 9px;
+      border-radius: 7px;
       font-family: var(--font-mono);
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 800;
       color: #fff;
     }
 
     .time-duration {
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 600;
       color: var(--text-muted);
-      padding-left: 4px;
+      padding-left: 5px;
       border-left: 1px solid rgba(255,255,255,0.15);
     }
 
     .phase-badge {
-      font-size: 10px;
+      font-size: 9.5px;
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      padding: 4px 9px;
+      padding: 3px 8px;
       border-radius: 999px;
-      background: rgba(11, 15, 25, 0.75);
+      background: rgba(9, 13, 22, 0.75);
       border: 1px solid rgba(255, 255, 255, 0.14);
     }
 
@@ -423,7 +436,6 @@
     .stage-bar[data-phase="wrapup"] .phase-badge { color: #fda4af; border-color: rgba(253, 164, 175, 0.45); background: rgba(136, 19, 55, 0.55); }
     .stage-bar[data-phase="break"] .phase-badge { color: #cbd5e1; }
 
-    /* CENTER OF BAR: TITLE, ACTIONS, SCAFFOLDING SCRIPT, 4-SKILLS */
     .bar-title-row {
       display: flex;
       align-items: baseline;
@@ -432,19 +444,19 @@
     }
 
     .bar-title {
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 800;
       color: #fff;
       letter-spacing: -0.01em;
     }
 
     .bar-pages {
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 700;
       color: var(--accent);
       background: rgba(56, 189, 248, 0.12);
-      padding: 2px 7px;
-      border-radius: 6px;
+      padding: 2px 6px;
+      border-radius: 5px;
       white-space: nowrap;
       flex-shrink: 0;
     }
@@ -453,30 +465,30 @@
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 4px;
-      font-size: 12.5px;
+      gap: 3px;
+      font-size: 12px;
       color: #e2e8f0;
     }
 
     .bar-bullets li {
       position: relative;
-      padding-left: 14px;
+      padding-left: 12px;
     }
 
     .bar-bullets li::before {
       content: "•";
       position: absolute;
-      left: 2px;
+      left: 1px;
       color: var(--accent);
       font-weight: 800;
     }
 
     .script-box {
-      background: rgba(11, 15, 25, 0.72);
+      background: rgba(9, 13, 22, 0.72);
       border-left: 3px solid var(--accent);
-      border-radius: 0 8px 8px 0;
-      padding: 7px 10px;
-      font-size: 12px;
+      border-radius: 0 7px 7px 0;
+      padding: 6px 9px;
+      font-size: 11.5px;
       color: #f1f5f9;
     }
 
@@ -486,14 +498,13 @@
 
     .script-box strong {
       color: #7dd3fc;
-      font-size: 10.5px;
+      font-size: 10px;
       text-transform: uppercase;
       letter-spacing: 0.04em;
       display: block;
-      margin-bottom: 2px;
+      margin-bottom: 1px;
     }
 
-    /* 4 SKILLS INTERACTIVE CHIPS */
     .skills-row {
       display: flex;
       flex-wrap: wrap;
@@ -501,19 +512,18 @@
     }
 
     .skill-chip {
-      background: rgba(11, 15, 25, 0.7);
+      background: rgba(9, 13, 22, 0.7);
       border: 1px solid rgba(255, 255, 255, 0.14);
       color: var(--text-muted);
-      padding: 3px 8px;
+      padding: 2px 7px;
       border-radius: 6px;
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 600;
       cursor: pointer;
       user-select: none;
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      transition: all 0.15s ease;
     }
 
     .skill-chip.checked {
@@ -522,11 +532,10 @@
       color: #a7f3d0;
     }
 
-    /* FOOT OF BAR: STATUS + LIVE COUNTDOWN */
     .bar-foot {
       margin-top: 2px;
-      padding-top: 8px;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 7px;
+      border-top: 1px solid rgba(255, 255, 255, 0.09);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -536,32 +545,27 @@
     .foot-status {
       display: flex;
       align-items: center;
-      gap: 6px;
-      font-size: 11.5px;
+      gap: 5px;
+      font-size: 11px;
       font-weight: 700;
       color: var(--text-muted);
     }
 
-    .stage-bar.is-active .foot-status {
-      color: #fff;
-    }
-
-    .stage-bar.is-done .foot-status {
-      color: #6ee7b7;
-    }
+    .stage-bar.is-active .foot-status { color: #fff; }
+    .stage-bar.is-done .foot-status { color: #6ee7b7; }
 
     .foot-countdown {
       font-family: var(--font-mono);
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 800;
-      padding: 4px 10px;
-      border-radius: 8px;
-      background: rgba(11, 15, 25, 0.85);
+      padding: 3px 9px;
+      border-radius: 7px;
+      background: rgba(9, 13, 22, 0.85);
       border: 1px solid rgba(255, 255, 255, 0.14);
       color: var(--text);
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
 
     .stage-bar.is-active .foot-countdown {
@@ -588,166 +592,15 @@
       50% { transform: scale(1.04); }
     }
 
-    /* JUMP HERE BUTTON WHEN SIMULATING */
     .jump-btn {
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid rgba(255, 255, 255, 0.15);
       color: #cbd5e1;
-      font-size: 10px;
-      font-weight: 700;
-      padding: 3px 7px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .jump-btn:active {
-      background: rgba(56, 189, 248, 0.25);
-    }
-
-    /* BOTTOM STICKY DOCK (SQUAD XP & CLASSROOM LANGUAGE) */
-    .bottom-dock {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 120;
-      background: rgba(11, 15, 25, 0.94);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-top: 1px solid var(--border);
-      padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
-    }
-
-    .dock-inner {
-      max-width: 560px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 6px;
-    }
-
-    .squad-mini {
-      display: flex;
-      gap: 5px;
-      flex: 1;
-    }
-
-    .squad-btn {
-      flex: 1;
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 5px 4px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .squad-btn:active {
-      transform: scale(0.95);
-      border-color: var(--accent);
-    }
-
-    .squad-name {
       font-size: 9.5px;
       font-weight: 700;
-      color: var(--text-muted);
-      text-transform: uppercase;
-    }
-
-    .squad-score {
-      font-family: var(--font-mono);
-      font-size: 13px;
-      font-weight: 800;
-      color: #fcd34d;
-    }
-
-    .dock-tool-btn {
-      background: rgba(56, 189, 248, 0.15);
-      border: 1px solid rgba(56, 189, 248, 0.4);
-      color: #e0f2fe;
-      border-radius: 10px;
-      padding: 7px 10px;
-      font-size: 11px;
-      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 5px;
       cursor: pointer;
-      white-space: nowrap;
-    }
-
-    /* MODAL FOR CLASSROOM LANGUAGE & GRABBERS */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.72);
-      backdrop-filter: blur(6px);
-      z-index: 200;
-      display: none;
-      align-items: flex-end;
-      justify-content: center;
-    }
-
-    .modal-overlay.open {
-      display: flex;
-    }
-
-    .modal-sheet {
-      width: 100%;
-      max-width: 560px;
-      background: var(--surface);
-      border-top: 1px solid rgba(255,255,255,0.16);
-      border-radius: 20px 20px 0 0;
-      padding: 18px 16px 28px;
-      max-height: 82dvh;
-      overflow-y: auto;
-    }
-
-    .modal-hdr {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
-    }
-
-    .modal-hdr h2 {
-      font-size: 15px;
-      font-weight: 800;
-    }
-
-    .close-btn {
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      color: #fff;
-      padding: 5px 11px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .helper-card {
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 11px 13px;
-      margin-bottom: 10px;
-    }
-
-    .helper-card h3 {
-      font-size: 12px;
-      font-weight: 800;
-      color: var(--accent);
-      text-transform: uppercase;
-      margin-bottom: 6px;
-    }
-
-    .helper-card ul {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      font-size: 12.5px;
     }
   </style>
 </head>
@@ -758,7 +611,7 @@
     <div class="hud-inner">
       <div class="hud-row-1">
         <div class="brand-title">
-          <span class="tag" id="modeTag">RELÓGIO DO SISTEMA • 6º ANO BOOK D</span>
+          <span class="tag" id="modeTag">RELÓGIO OFICIAL • 6º ANO BOOK D</span>
           <h1 id="dayHeaderTitle">Segunda 19/10 • Cap. 7 (Classes 1 & 2)</h1>
         </div>
         <div class="clock-pill" title="Horário atual de referência">
@@ -787,90 +640,22 @@
     </div>
   </header>
 
-  <!-- UTILITY CONTROLS (SIMULATION / WAKE LOCK / OFFSET) -->
+  <!-- UTILITY CONTROLS (SIMULATION PLAY / PAUSE / STOP + WAKE LOCK) -->
   <div class="mode-bar">
-    <div style="display:flex; gap:6px; flex-wrap:wrap;">
-      <button class="btn-chip" id="btnRealClock" onclick="resetToRealClock()">🕒 Relógio Oficial (08:40)</button>
-      <button class="btn-chip" id="btnSimNow" onclick="startSimulationNow()">▶ Simular Aula Agora</button>
-      <button class="btn-chip" onclick="shiftOffset(-60)" title="Adiar relógio da aula em 1 min">-1m</button>
-      <button class="btn-chip" onclick="shiftOffset(60)" title="Adiantar relógio da aula em 1 min">+1m</button>
+    <div style="display:flex; gap:5px; flex-wrap:wrap; align-items:center;">
+      <button class="btn-chip btn-play" id="btnSimNow" onclick="startSimulationNow()">▶ Simular Aula</button>
+      <button class="btn-chip btn-pause" id="btnPauseSim" onclick="togglePauseSim()" style="display:none;">⏸ Pausar</button>
+      <button class="btn-chip btn-stop" id="btnStopSim" onclick="stopSimulation()" style="display:none;">⏹ PARAR SIMULAÇÃO (Stop)</button>
+      <button class="btn-chip" onclick="shiftOffset(-60)" title="Atrasar 1 min">-1m</button>
+      <button class="btn-chip" onclick="shiftOffset(60)" title="Adiantar 1 min">+1m</button>
     </div>
-    <button class="btn-chip" id="btnWakeLock" onclick="toggleWakeLock()">☀️ Tela Sempre Acesa</button>
+    <button class="btn-chip" id="btnWakeLock" onclick="toggleWakeLock()">☀️ Tela Acesa</button>
   </div>
 
   <!-- TIMELINE BARS CONTAINER -->
   <main class="container" id="timelineContainer"></main>
 
-  <!-- STICKY BOTTOM DOCK: SQUAD XP + CLASSROOM LANGUAGE -->
-  <footer class="bottom-dock">
-    <div class="dock-inner">
-      <div class="squad-mini">
-        <div class="squad-btn" onclick="addXp(0)" title="Toque para +1 XP">
-          <span class="squad-name">🦁 Sq 1</span>
-          <span class="squad-score" id="xp-0">0 XP</span>
-        </div>
-        <div class="squad-btn" onclick="addXp(1)" title="Toque para +1 XP">
-          <span class="squad-name">🦅 Sq 2</span>
-          <span class="squad-score" id="xp-1">0 XP</span>
-        </div>
-        <div class="squad-btn" onclick="addXp(2)" title="Toque para +1 XP">
-          <span class="squad-name">🐬 Sq 3</span>
-          <span class="squad-score" id="xp-2">0 XP</span>
-        </div>
-        <div class="squad-btn" onclick="addXp(3)" title="Toque para +1 XP">
-          <span class="squad-name">🦊 Sq 4</span>
-          <span class="squad-score" id="xp-3">0 XP</span>
-        </div>
-      </div>
-      <button class="dock-tool-btn" onclick="toggleModal(true)">💬 Passwords & Grabbers</button>
-    </div>
-  </footer>
-
-  <!-- MODAL: CLASSROOM LANGUAGE & ATTENTION GRABBERS -->
-  <div class="modal-overlay" id="helperModal" onclick="if(event.target===this) toggleModal(false)">
-    <div class="modal-sheet">
-      <div class="modal-hdr">
-        <h2>⚡ Kit Master: Controle & Inglês de Vivência</h2>
-        <button class="close-btn" onclick="toggleModal(false)">Fechar</button>
-      </div>
-      <div class="helper-card">
-        <h3>🔊 3 Attention Grabbers (Foco em 3 Segundos)</h3>
-        <ul>
-          <li><strong>1. Call & Response:</strong> Você: <em>"Class, class!"</em> → Turma: <em>"Yes, yes!"</em></li>
-          <li><strong>2. Eyes on Me:</strong> Você: <em>"1, 2, 3, eyes on me!"</em> → Turma: <em>"1, 2, eyes on you!"</em></li>
-          <li><strong>3. Countdown + XP:</strong> <em>"Open page 6 in 5, 4, 3 (Squad 2 is ready, +1 XP!), 2, 1, Zero!"</em></li>
-        </ul>
-      </div>
-      <div class="helper-card">
-        <h3>🔑 English Passwords (Canto Esquerdo do Quadro)</h3>
-        <ul>
-          <li>1. <em>"May I go to the restroom?"</em></li>
-          <li>2. <em>"May I drink some water?"</em></li>
-          <li>3. <em>"How do you say '___' in English?"</em></li>
-          <li>4. <em>"Can you repeat that, please?"</em></li>
-          <li>5. <em>"What page are we on?"</em></li>
-          <li>6. <em>"I finished! What's next?"</em></li>
-        </ul>
-      </div>
-      <div class="helper-card">
-        <h3>🏁 Checklist de Finalização Profissional (Wrap-up)</h3>
-        <ul>
-          <li>☐ Parar a atividade 5–6 min antes do sinal (nunca ser cortado pelo sino!).</li>
-          <li>☐ Ouvir 3 a 4 alunos lendo sua produção final / Exit Ticket.</li>
-          <li>☐ Dar o Check público nas 4 Skills no quadro (Listening, Reading, Writing, Speaking).</li>
-          <li>☐ Modelar 1 exemplo da Tarefa de Casa e premiar o Squad vencedor do dia.</li>
-        </ul>
-      </div>
-      <div style="text-align:right; margin-top:6px;">
-        <button class="btn-chip" onclick="resetXp()">Zerar Placar Squad XP</button>
-      </div>
-    </div>
-  </div>
-
   <script>
-    // =========================================================================
-    // SCHEDULE DATA (EXACT SYSTEM CLOCK INTERVALS FOR 6TH GRADE)
-    // =========================================================================
     const SCHEDULES = {
       mon: {
         title: "Segunda 19/10 • Cap. 7 (Classes 1 & 2)",
@@ -948,7 +733,7 @@
             bullets: [
               "Attention Grabber (\"Class, class!\" → \"Yes, yes!\") faltando 6 min para o sino.",
               "1 representante de cada Squad lê a frase do cartaz em voz alta (1 min por equipe).",
-              "Dar Check nas 4 Skills do Bloco 1 no quadro e liberar pontualmente às 09:20!"
+              "Dar Check nas 4 Skills do Bloco 1 e liberar pontualmente às 09:20!"
             ],
             script: "\"Hands up and freeze in 3, 2, 1! Let's hear 1 awesome sentence from each Squad before our break!\"",
             skills: ["Speaking", "Listening", "Writing", "Reading"]
@@ -964,7 +749,7 @@
             pages: "09:20 – 09:40",
             bullets: [
               "Descansar / tomar água.",
-              "Nos últimos 2 min (09:38): deixar aberto na TV o vídeo do QR Code da pág. 8 (Grace & Lily + Guide Dog at Work) e anotar o Sentence Frame da pág. 9 no quadro."
+              "Nos últimos 2 min (09:38): deixar aberto na TV o slide da Class 2 e o vídeo do QR Code da pág. 8."
             ],
             script: "Próximo bloco inicia exatamente às 09:40 com a Class 2 (págs. 8, 9, 10 e 57).",
             skills: []
@@ -1042,7 +827,7 @@
             bullets: [
               "Modelar ao vivo a linha 1 da Pet Survey (Activity 2, p. 57) entrevistando 1 aluno da sala.",
               "Explicar a pesquisa sobre raposas (Activity 5, p. 10) para quarta-feira.",
-              "Dar o Check final nas 4 Skills no quadro (Listening ☑ Reading ☑ Writing ☑ Speaking ☑) e anunciar o Squad campeão!"
+              "Dar o Check final nas 4 Skills e anunciar o Squad campeão na TV!"
             ],
             script: "\"Open page 57! Look how I interview Lucas for line 1: 'Do you have a pet? What is your favorite pet?' Complete 8 interviews at home!\"",
             skills: ["Reading", "Writing", "Speaking", "Listening"]
@@ -1121,7 +906,7 @@
             title: "5. Finalização Profissional + Tarefa Activity 7",
             pages: "pp. 10, 11 & 54",
             bullets: [
-              "Ouvir 3 duplas lendo sua frase da Activity 8 + Check das 4 Skills no quadro.",
+              "Ouvir 3 duplas lendo sua frase da Activity 8 + Check das 4 Skills.",
               "Explicar e modelar a Tarefa de Casa: Activity 7 (pp. 10–11 — circular todos os adjetivos do texto das raposas)."
             ],
             script: "\"Look at page 10: 'reddish fur' — 'reddish' is an adjective! Circle all adjectives at home for tomorrow!\"",
@@ -1202,7 +987,7 @@
             title: "5. Finalização Profissional + Tarefas 10 e 11",
             pages: "p. 12",
             bullets: [
-              "Exit Ticket oral rápido com 3 idioms + Check das 4 Skills no quadro.",
+              "Exit Ticket oral rápido com 3 idioms + Check das 4 Skills.",
               "Explicar a Tarefa de Casa: Activity 10 (completar frases com idioms) e Activity 11 (criar 1 frase original com seu idiom favorito, p. 12)."
             ],
             script: "\"For homework on page 12, complete Activity 10 and write your own creative sentence in Activity 11!\"",
@@ -1292,13 +1077,11 @@
       }
     };
 
-    // =========================================================================
-    // STATE & STORAGE
-    // =========================================================================
     let currentDayKey = localStorage.getItem("tracker_day") || "mon";
     let offsetSeconds = Number(localStorage.getItem("tracker_offset") || 0);
+    let isPaused = false;
+    let pausedAtSec = null;
     let checkedSkills = JSON.parse(localStorage.getItem("tracker_skills") || "{}");
-    let squadXp = JSON.parse(localStorage.getItem("tracker_xp") || "[0,0,0,0]");
     let lastActiveStageId = null;
     let wakeLockSentinel = null;
 
@@ -1326,13 +1109,18 @@
       return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
     }
 
-    function getEffectiveNowSec() {
+    function getRealSec() {
       const now = new Date();
-      const realSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds() + now.getMilliseconds() / 1000;
-      return realSec + offsetSeconds;
+      return now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds() + now.getMilliseconds() / 1000;
     }
 
-    // Gentle beep + vibration on stage transition
+    function getEffectiveNowSec() {
+      if (isPaused && pausedAtSec !== null) {
+        return pausedAtSec;
+      }
+      return getRealSec() + offsetSeconds;
+    }
+
     function playTransitionAlert() {
       try {
         if (navigator.vibrate) navigator.vibrate([180, 90, 180]);
@@ -1340,8 +1128,8 @@
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = "sine";
-        osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-        osc.frequency.setValueAtTime(880, ctx.currentTime + 0.14); // A5
+        osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+        osc.frequency.setValueAtTime(880, ctx.currentTime + 0.14);
         gain.gain.setValueAtTime(0.08, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
         osc.connect(gain);
@@ -1351,9 +1139,6 @@
       } catch (e) {}
     }
 
-    // =========================================================================
-    // RENDER TIMELINE STRUCTURE
-    // =========================================================================
     function renderDayStructure() {
       const dayData = SCHEDULES[currentDayKey];
       document.getElementById("dayHeaderTitle").textContent = dayData.title;
@@ -1386,25 +1171,23 @@
           const key = `${st.id}_${sk}`;
           const isChecked = !!checkedSkills[key];
           const icon = sk === "Listening" ? "🎧" : sk === "Reading" ? "📖" : sk === "Writing" ? "✍️" : "🗣️";
-          return `<span class="skill-chip ${isChecked ? 'checked' : ''}" onclick="toggleSkill('${key}', this)">${icon} ${sk} ${isChecked ? '✓' : ''}</span>`;
+          return `<span class="skill-chip ${isChecked ? 'checked' : ''}" onclick="toggleSkill('${key}')">${icon} ${sk} ${isChecked ? '✓' : ''}</span>`;
         }).join("");
 
         card.innerHTML = `
           <div class="stage-fill" id="fill-${st.id}"></div>
           <div class="stage-content">
-            <!-- TOP: Delimited Clock Window + Phase -->
             <div class="bar-top">
               <div class="time-window-pill">
                 <span>⏰ ${st.start} – ${st.end}</span>
                 <span class="time-duration">${durMin} min</span>
               </div>
-              <div style="display:flex; align-items:center; gap:6px;">
-                <button class="jump-btn" onclick="jumpToStage('${st.start}')" title="Testar/Sincronizar relógio no início desta etapa">Ir p/ ${st.start}</button>
+              <div style="display:flex; align-items:center; gap:5px;">
+                <button class="jump-btn" onclick="jumpToStage('${st.start}')">Testar ${st.start}</button>
                 <span class="phase-badge">${st.phaseLabel}</span>
               </div>
             </div>
 
-            <!-- BODY: Title, Pages, Bullets, Script, 4-Skills -->
             <div class="bar-title-row">
               <h2 class="bar-title">${st.title}</h2>
               <span class="bar-pages">${st.pages}</span>
@@ -1415,13 +1198,12 @@
             </ul>
 
             <div class="script-box">
-              <strong>Quadros & Teacher Talk (Scaffolding)</strong>
+              <strong>Quadro & Teacher Talk (Scaffolding)</strong>
               ${st.script}
             </div>
 
             ${skillsHtml ? `<div class="skills-row">${skillsHtml}</div>` : ""}
 
-            <!-- FOOT: Status + Live Countdown at bottom of bar -->
             <div class="bar-foot">
               <div class="foot-status" id="status-${st.id}">⏳ Aguardando...</div>
               <div class="foot-countdown" id="countdown-${st.id}">--m --s</div>
@@ -1434,31 +1216,32 @@
       updateTick();
     }
 
-    // =========================================================================
-    // REAL-TIME PROGRESS & COUNTDOWN TICK
-    // =========================================================================
     function updateTick() {
       const nowSec = getEffectiveNowSec();
       document.getElementById("systemClock").textContent = formatClock(nowSec);
 
-      const isSim = Math.abs(offsetSeconds) > 5;
+      const isSim = Math.abs(offsetSeconds) > 5 || isPaused;
       const dot = document.getElementById("liveDot");
       const modeTag = document.getElementById("modeTag");
       const btnSim = document.getElementById("btnSimNow");
-      const btnReal = document.getElementById("btnRealClock");
+      const btnPause = document.getElementById("btnPauseSim");
+      const btnStop = document.getElementById("btnStopSim");
 
       if (isSim) {
-        dot.classList.add("sim");
-        modeTag.textContent = "MODO SIMULAÇÃO / AJUSTE FINO ATIVO";
-        modeTag.style.color = "#fcd34d";
-        btnSim.classList.add("active-sim");
-        btnReal.classList.remove("active-wake");
+        dot.className = isPaused ? "live-dot paused" : "live-dot sim";
+        modeTag.textContent = isPaused ? "⏸ SIMULAÇÃO PAUSADA" : "▶ SIMULAÇÃO ATIVA (CLIQUE EM PARAR PARA VOLTAR AO RELÓGIO)";
+        modeTag.style.color = isPaused ? "#fda4af" : "#fcd34d";
+        btnSim.style.display = "none";
+        btnPause.style.display = "inline-flex";
+        btnPause.textContent = isPaused ? "▶ Continuar" : "⏸ Pausar";
+        btnStop.style.display = "inline-flex";
       } else {
-        dot.classList.remove("sim");
+        dot.className = "live-dot";
         modeTag.textContent = "RELÓGIO OFICIAL DO SISTEMA • 6º ANO";
         modeTag.style.color = "var(--accent)";
-        btnSim.classList.remove("active-sim");
-        btnReal.classList.add("active-wake");
+        btnSim.style.display = "inline-flex";
+        btnPause.style.display = "none";
+        btnStop.style.display = "none";
       }
 
       const dayData = SCHEDULES[currentDayKey];
@@ -1478,16 +1261,14 @@
         if (!barEl) return;
 
         if (nowSec < startSec) {
-          // UPCOMING STAGE
           barEl.classList.remove("is-active", "is-done");
           fillEl.style.width = "0%";
           const waitSec = startSec - nowSec;
-          statusEl.innerHTML = `🕒 Aguardando início (${st.start})`;
+          statusEl.innerHTML = `🕒 Aguardando (${st.start})`;
           countEl.classList.remove("urgent");
           countEl.innerHTML = `⏳ Inicia em ${formatSecToMmSs(waitSec)}`;
           if (!nextStage) nextStage = { st, waitSec };
         } else if (nowSec >= startSec && nowSec < endSec) {
-          // ACTIVE STAGE (FILLING UP IN REAL TIME)
           barEl.classList.add("is-active");
           barEl.classList.remove("is-done");
           const elapsed = nowSec - startSec;
@@ -1495,7 +1276,7 @@
           const pct = Math.min(100, Math.max(0, (elapsed / duration) * 100));
           fillEl.style.width = `${pct.toFixed(2)}%`;
 
-          statusEl.innerHTML = `🔥 EM ANDAMENTO • <strong>${Math.floor(pct)}% preenchido</strong>`;
+          statusEl.innerHTML = `🔥 EM ANDAMENTO • <strong>${Math.floor(pct)}%</strong>`;
           countEl.innerHTML = `⏱️ Regressiva: ${formatSecToMmSs(remaining)}`;
 
           if (remaining <= 60) {
@@ -1506,17 +1287,15 @@
 
           activeStage = { st, remaining, pct };
         } else {
-          // COMPLETED STAGE (100% FULL)
           barEl.classList.remove("is-active");
           barEl.classList.add("is-done");
           fillEl.style.width = "100%";
-          statusEl.innerHTML = `✅ Etapa 100% Concluída`;
+          statusEl.innerHTML = `✅ 100% Concluída`;
           countEl.classList.remove("urgent");
-          countEl.innerHTML = `✓ Finalizado às ${st.end}`;
+          countEl.innerHTML = `✓ Fim às ${st.end}`;
         }
       });
 
-      // Update Sticky Top HUD Banner
       const hudStatus = document.getElementById("hudActiveStatus");
       const hudTitle = document.getElementById("hudActiveTitle");
       const hudCountdown = document.getElementById("hudActiveCountdown");
@@ -1544,16 +1323,13 @@
         lastActiveStageId = null;
       } else {
         hudStatus.textContent = "AULA FINALIZADA (100%)";
-        hudTitle.textContent = "Todas as etapas e Wrap-up concluídos com sucesso!";
+        hudTitle.textContent = "Todas as etapas concluídas! Use 'Simular Aula' se quiser testar.";
         hudCountdown.textContent = "✓ 100%";
         hudFill.style.width = "100%";
         lastActiveStageId = null;
       }
     }
 
-    // =========================================================================
-    // INTERACTIONS & HELPERS
-    // =========================================================================
     function selectDay(dayKey) {
       currentDayKey = dayKey;
       localStorage.setItem("tracker_day", dayKey);
@@ -1561,8 +1337,9 @@
     }
 
     function startSimulationNow() {
-      const now = new Date();
-      const realSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+      isPaused = false;
+      pausedAtSec = null;
+      const realSec = getRealSec();
       const targetStart = parseHmToSec("08:40");
       offsetSeconds = targetStart - realSec;
       localStorage.setItem("tracker_offset", String(offsetSeconds));
@@ -1570,9 +1347,33 @@
       updateTick();
     }
 
+    function togglePauseSim() {
+      if (!isPaused) {
+        pausedAtSec = getEffectiveNowSec();
+        isPaused = true;
+      } else {
+        const realSec = getRealSec();
+        offsetSeconds = pausedAtSec - realSec;
+        localStorage.setItem("tracker_offset", String(offsetSeconds));
+        isPaused = false;
+        pausedAtSec = null;
+      }
+      updateTick();
+    }
+
+    function stopSimulation() {
+      isPaused = false;
+      pausedAtSec = null;
+      offsetSeconds = 0;
+      localStorage.setItem("tracker_offset", "0");
+      lastActiveStageId = null;
+      updateTick();
+    }
+
     function jumpToStage(hmString) {
-      const now = new Date();
-      const realSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+      isPaused = false;
+      pausedAtSec = null;
+      const realSec = getRealSec();
       const targetSec = parseHmToSec(hmString);
       offsetSeconds = targetSec - realSec;
       localStorage.setItem("tracker_offset", String(offsetSeconds));
@@ -1580,79 +1381,44 @@
       updateTick();
     }
 
-    function resetToRealClock() {
-      offsetSeconds = 0;
-      localStorage.setItem("tracker_offset", "0");
-      lastActiveStageId = null;
-      updateTick();
-    }
-
     function shiftOffset(deltaSec) {
-      offsetSeconds += deltaSec;
-      localStorage.setItem("tracker_offset", String(offsetSeconds));
+      if (isPaused && pausedAtSec !== null) {
+        pausedAtSec += deltaSec;
+      } else {
+        offsetSeconds += deltaSec;
+        localStorage.setItem("tracker_offset", String(offsetSeconds));
+      }
       updateTick();
     }
 
-    function toggleSkill(key, el) {
+    function toggleSkill(key) {
       checkedSkills[key] = !checkedSkills[key];
       localStorage.setItem("tracker_skills", JSON.stringify(checkedSkills));
       renderDayStructure();
     }
 
-    function addXp(idx) {
-      squadXp[idx] = (squadXp[idx] || 0) + 1;
-      localStorage.setItem("tracker_xp", JSON.stringify(squadXp));
-      renderXp();
-    }
-
-    function resetXp() {
-      squadXp = [0, 0, 0, 0];
-      localStorage.setItem("tracker_xp", JSON.stringify(squadXp));
-      renderXp();
-    }
-
-    function renderXp() {
-      squadXp.forEach((val, idx) => {
-        const el = document.getElementById(`xp-${idx}`);
-        if (el) el.textContent = `${val} XP`;
-      });
-    }
-
-    function toggleModal(open) {
-      const m = document.getElementById("helperModal");
-      if (open) m.classList.add("open");
-      else m.classList.remove("open");
-    }
-
     async function toggleWakeLock() {
       const btn = document.getElementById("btnWakeLock");
-      if (!("wakeLock" in navigator)) {
-        alert("Seu navegador não suporta Wake Lock automático, mas a página continuará rodando normalmente.");
-        return;
-      }
+      if (!("wakeLock" in navigator)) return;
       try {
         if (!wakeLockSentinel) {
           wakeLockSentinel = await navigator.wakeLock.request("screen");
           btn.classList.add("active-wake");
-          btn.textContent = "☀️ Tela Sempre Acesa (Ativo)";
+          btn.textContent = "☀️ Acesa (ON)";
           wakeLockSentinel.addEventListener("release", () => {
             wakeLockSentinel = null;
             btn.classList.remove("active-wake");
-            btn.textContent = "☀️ Tela Sempre Acesa";
+            btn.textContent = "☀️ Tela Acesa";
           });
         } else {
           await wakeLockSentinel.release();
           wakeLockSentinel = null;
           btn.classList.remove("active-wake");
-          btn.textContent = "☀️ Tela Sempre Acesa";
+          btn.textContent = "☀️ Tela Acesa";
         }
-      } catch (err) {
-        console.warn(err);
-      }
+      } catch (err) {}
     }
 
-    // Initialize
-    renderXp();
     renderDayStructure();
     setInterval(updateTick, 250);
   </script>
