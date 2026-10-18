@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0f19" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>6º Ano • Class Time Tracker (PPP Espectral)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --surface: #131a2a;
+      --surface-2: #1b2438;
+      --border: rgba(255, 255, 255, 0.09);
+      --border-active: rgba(56, 189, 248, 0.75);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --accent: #38bdf8;
+      --emerald: #10b981;
+      --indigo: #6366f1;
+      --amber: #f59e0b;
+      --rose: #f43f5e;
+      --purple: #a855f7;
+      --radius: 16px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      line-height: 1.45;
+      padding-bottom: 96px;
+      min-height: 100dvh;
+      overflow-x: hidden;
+    }
+
+    /* STICKY TOP HUD */
+    .top-hud {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(11, 15, 25, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 14px 10px;
+    }
+
+    .hud-inner {
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    .hud-row-1 {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .brand-title {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-title .tag {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+    }
+
+    .brand-title h1 {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    .clock-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface-2);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 6px 11px;
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 15px;
+      font-weight: 800;
+      color: #fff;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--emerald);
+      box-shadow: 0 0 8px var(--emerald);
+      animation: pulseDot 1.6s infinite ease-in-out;
+    }
+
+    .live-dot.sim {
+      background: var(--amber);
+      box-shadow: 0 0 8px var(--amber);
+    }
+
+    @keyframes pulseDot {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.35); opacity: 0.55; }
+    }
+
+    /* ACTIVE STAGE SUMMARY BANNER IN HUD */
+    .hud-active-banner {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 8px 11px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hud-active-fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 0%;
+      background: linear-gradient(90deg, rgba(56, 189, 248, 0.16), rgba(16, 185, 129, 0.22));
+      transition: width 0.3s linear;
+      pointer-events: none;
+    }
+
+    .hud-active-info {
+      position: relative;
+      z-index: 1;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .hud-active-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      display: block;
+    }
+
+    .hud-active-title {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .hud-active-timer {
+      position: relative;
+      z-index: 1;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--accent);
+      background: rgba(11, 15, 25, 0.75);
+      padding: 4px 9px;
+      border-radius: 8px;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      flex-shrink: 0;
+    }
+
+    /* CONTROLS & DAY TABS */
+    .controls-row {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 2px;
+    }
+    .controls-row::-webkit-scrollbar { display: none; }
+
+    .day-tab {
+      background: var(--surface);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 6px 11px;
+      border-radius: 9px;
+      font-size: 11.5px;
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .day-tab.active {
+      background: rgba(56, 189, 248, 0.16);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .mode-bar {
+      max-width: 560px;
+      margin: 10px auto 0;
+      padding: 0 14px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .btn-chip {
+      background: var(--surface);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+
+    .btn-chip:active {
+      transform: scale(0.97);
+    }
+
+    .btn-chip.active-sim {
+      background: rgba(245, 158, 11, 0.18);
+      color: #fcd34d;
+      border-color: rgba(245, 158, 11, 0.55);
+    }
+
+    .btn-chip.active-wake {
+      background: rgba(16, 185, 129, 0.16);
+      color: #6ee7b7;
+      border-color: rgba(16, 185, 129, 0.45);
+    }
+
+    /* MAIN TIMELINE CONTAINER */
+    .container {
+      max-width: 560px;
+      margin: 10px auto 0;
+      padding: 0 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .block-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 6px 0 2px;
+    }
+
+    .block-divider span {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .block-divider::after {
+      content: "";
+      height: 1px;
+      flex: 1;
+      background: var(--border);
+    }
+
+    /* STAGE BAR CARD (PROGRESSIVE FILL IN BACKGROUND) */
+    .stage-bar {
+      position: relative;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+    }
+
+    /* Background Fill Element */
+    .stage-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 0%;
+      z-index: 0;
+      pointer-events: none;
+      transition: width 0.35s linear;
+    }
+
+    /* Phase color themes for the progressive fill */
+    .stage-bar[data-phase="activation"] .stage-fill {
+      background: linear-gradient(90deg, rgba(56, 189, 248, 0.20), rgba(56, 189, 248, 0.34));
+    }
+    .stage-bar[data-phase="presentation"] .stage-fill {
+      background: linear-gradient(90deg, rgba(99, 102, 241, 0.22), rgba(139, 92, 246, 0.36));
+    }
+    .stage-bar[data-phase="practice"] .stage-fill {
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.20), rgba(20, 184, 166, 0.35));
+    }
+    .stage-bar[data-phase="production"] .stage-fill {
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.20), rgba(249, 115, 22, 0.35));
+    }
+    .stage-bar[data-phase="wrapup"] .stage-fill {
+      background: linear-gradient(90deg, rgba(244, 63, 94, 0.24), rgba(251, 113, 133, 0.40));
+    }
+    .stage-bar[data-phase="break"] .stage-fill {
+      background: linear-gradient(90deg, rgba(148, 163, 184, 0.16), rgba(148, 163, 184, 0.28));
+    }
+
+    /* Leading edge glow on active bar fill */
+    .stage-bar.is-active .stage-fill {
+      border-right: 2.5px solid rgba(255, 255, 255, 0.75);
+      box-shadow: 4px 0 18px rgba(56, 189, 248, 0.35);
+    }
+
+    /* State Styles: Active, Completed, Upcoming */
+    .stage-bar.is-active {
+      border-color: var(--border-active);
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.25), 0 10px 28px rgba(0, 0, 0, 0.45);
+      transform: scale(1.008);
+    }
+
+    .stage-bar.is-active[data-phase="wrapup"] {
+      border-color: rgba(244, 63, 94, 0.85);
+      box-shadow: 0 0 0 1px rgba(244, 63, 94, 0.35), 0 10px 28px rgba(244, 63, 94, 0.22);
+    }
+
+    .stage-bar.is-done {
+      border-color: rgba(16, 185, 129, 0.35);
+      opacity: 0.86;
+    }
+
+    .stage-bar.is-done .stage-fill {
+      width: 100% !important;
+      border-right: none;
+    }
+
+    .stage-content {
+      position: relative;
+      z-index: 1;
+      padding: 13px 14px 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    /* TOP OF BAR: DELIMITED TIME WINDOW + PHASE BADGE */
+    .bar-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .time-window-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(11, 15, 25, 0.82);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .time-duration {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      padding-left: 4px;
+      border-left: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .phase-badge {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: rgba(11, 15, 25, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .stage-bar[data-phase="activation"] .phase-badge { color: #7dd3fc; border-color: rgba(125, 211, 252, 0.35); }
+    .stage-bar[data-phase="presentation"] .phase-badge { color: #c4b5fd; border-color: rgba(196, 181, 253, 0.35); }
+    .stage-bar[data-phase="practice"] .phase-badge { color: #6ee7b7; border-color: rgba(110, 231, 183, 0.35); }
+    .stage-bar[data-phase="production"] .phase-badge { color: #fcd34d; border-color: rgba(252, 211, 77, 0.35); }
+    .stage-bar[data-phase="wrapup"] .phase-badge { color: #fda4af; border-color: rgba(253, 164, 175, 0.45); background: rgba(136, 19, 55, 0.55); }
+    .stage-bar[data-phase="break"] .phase-badge { color: #cbd5e1; }
+
+    /* CENTER OF BAR: TITLE, ACTIONS, SCAFFOLDING SCRIPT, 4-SKILLS */
+    .bar-title-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .bar-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.01em;
+    }
+
+    .bar-pages {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+      background: rgba(56, 189, 248, 0.12);
+      padding: 2px 7px;
+      border-radius: 6px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .bar-bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 12.5px;
+      color: #e2e8f0;
+    }
+
+    .bar-bullets li {
+      position: relative;
+      padding-left: 14px;
+    }
+
+    .bar-bullets li::before {
+      content: "•";
+      position: absolute;
+      left: 2px;
+      color: var(--accent);
+      font-weight: 800;
+    }
+
+    .script-box {
+      background: rgba(11, 15, 25, 0.72);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+      padding: 7px 10px;
+      font-size: 12px;
+      color: #f1f5f9;
+    }
+
+    .stage-bar[data-phase="wrapup"] .script-box {
+      border-left-color: var(--rose);
+    }
+
+    .script-box strong {
+      color: #7dd3fc;
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    /* 4 SKILLS INTERACTIVE CHIPS */
+    .skills-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .skill-chip {
+      background: rgba(11, 15, 25, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: var(--text-muted);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+    }
+
+    .skill-chip.checked {
+      background: rgba(16, 185, 129, 0.22);
+      border-color: rgba(16, 185, 129, 0.6);
+      color: #a7f3d0;
+    }
+
+    /* FOOT OF BAR: STATUS + LIVE COUNTDOWN */
+    .bar-foot {
+      margin-top: 2px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .foot-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .stage-bar.is-active .foot-status {
+      color: #fff;
+    }
+
+    .stage-bar.is-done .foot-status {
+      color: #6ee7b7;
+    }
+
+    .foot-countdown {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 8px;
+      background: rgba(11, 15, 25, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stage-bar.is-active .foot-countdown {
+      background: rgba(56, 189, 248, 0.18);
+      border-color: rgba(56, 189, 248, 0.55);
+      color: #e0f2fe;
+    }
+
+    .stage-bar.is-active .foot-countdown.urgent {
+      background: rgba(244, 63, 94, 0.28);
+      border-color: rgba(244, 63, 94, 0.8);
+      color: #ffe4e6;
+      animation: pulseUrgent 1s infinite ease-in-out;
+    }
+
+    .stage-bar.is-done .foot-countdown {
+      background: rgba(16, 185, 129, 0.18);
+      border-color: rgba(16, 185, 129, 0.45);
+      color: #a7f3d0;
+    }
+
+    @keyframes pulseUrgent {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.04); }
+    }
+
+    /* JUMP HERE BUTTON WHEN SIMULATING */
+    .jump-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #cbd5e1;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 7px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .jump-btn:active {
+      background: rgba(56, 189, 248, 0.25);
+    }
+
+    /* BOTTOM STICKY DOCK (SQUAD XP & CLASSROOM LANGUAGE) */
+    .bottom-dock {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 120;
+      background: rgba(11, 15, 25, 0.94);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-top: 1px solid var(--border);
+      padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+    }
+
+    .dock-inner {
+      max-width: 560px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .squad-mini {
+      display: flex;
+      gap: 5px;
+      flex: 1;
+    }
+
+    .squad-btn {
+      flex: 1;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 5px 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .squad-btn:active {
+      transform: scale(0.95);
+      border-color: var(--accent);
+    }
+
+    .squad-name {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .squad-score {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 800;
+      color: #fcd34d;
+    }
+
+    .dock-tool-btn {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      color: #e0f2fe;
+      border-radius: 10px;
+      padding: 7px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    /* MODAL FOR CLASSROOM LANGUAGE & GRABBERS */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(6px);
+      z-index: 200;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-sheet {
+      width: 100%;
+      max-width: 560px;
+      background: var(--surface);
+      border-top: 1px solid rgba(255,255,255,0.16);
+      border-radius: 20px 20px 0 0;
+      padding: 18px 16px 28px;
+      max-height: 82dvh;
+      overflow-y: auto;
+    }
+
+    .modal-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .modal-hdr h2 {
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .close-btn {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 5px 11px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .helper-card {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 11px 13px;
+      margin-bottom: 10px;
+    }
+
+    .helper-card h3 {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .helper-card ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      font-size: 12.5px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- STICKY TOP HUD -->
+  <header class="top-hud">
+    <div class="hud-inner">
+      <div class="hud-row-1">
+        <div class="brand-title">
+          <span class="tag" id="modeTag">RELÓGIO DO SISTEMA • 6º ANO BOOK D</span>
+          <h1 id="dayHeaderTitle">Segunda 19/10 • Cap. 7 (Classes 1 & 2)</h1>
+        </div>
+        <div class="clock-pill" title="Horário atual de referência">
+          <span class="live-dot" id="liveDot"></span>
+          <span id="systemClock">00:00:00</span>
+        </div>
+      </div>
+
+      <!-- Current Stage Quick Banner -->
+      <div class="hud-active-banner">
+        <div class="hud-active-fill" id="hudBannerFill"></div>
+        <div class="hud-active-info">
+          <span class="hud-active-label" id="hudActiveStatus">ETAPA ATUAL</span>
+          <div class="hud-active-title" id="hudActiveTitle">Carregando cronograma...</div>
+        </div>
+        <div class="hud-active-timer" id="hudActiveCountdown">--:--</div>
+      </div>
+
+      <!-- Day Selector Tabs -->
+      <div class="controls-row">
+        <button class="day-tab active" onclick="selectDay('mon')" id="tab-mon">SEG 19/10 (08:40–10:20)</button>
+        <button class="day-tab" onclick="selectDay('wed')" id="tab-wed">QUA 21/10 (Class 3)</button>
+        <button class="day-tab" onclick="selectDay('thu')" id="tab-thu">QUI 22/10 (Class 4)</button>
+        <button class="day-tab" onclick="selectDay('fri')" id="tab-fri">SEX 23/10 (Class 5)</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- UTILITY CONTROLS (SIMULATION / WAKE LOCK / OFFSET) -->
+  <div class="mode-bar">
+    <div style="display:flex; gap:6px; flex-wrap:wrap;">
+      <button class="btn-chip" id="btnRealClock" onclick="resetToRealClock()">🕒 Relógio Oficial (08:40)</button>
+      <button class="btn-chip" id="btnSimNow" onclick="startSimulationNow()">▶ Simular Aula Agora</button>
+      <button class="btn-chip" onclick="shiftOffset(-60)" title="Adiar relógio da aula em 1 min">-1m</button>
+      <button class="btn-chip" onclick="shiftOffset(60)" title="Adiantar relógio da aula em 1 min">+1m</button>
+    </div>
+    <button class="btn-chip" id="btnWakeLock" onclick="toggleWakeLock()">☀️ Tela Sempre Acesa</button>
+  </div>
+
+  <!-- TIMELINE BARS CONTAINER -->
+  <main class="container" id="timelineContainer"></main>
+
+  <!-- STICKY BOTTOM DOCK: SQUAD XP + CLASSROOM LANGUAGE -->
+  <footer class="bottom-dock">
+    <div class="dock-inner">
+      <div class="squad-mini">
+        <div class="squad-btn" onclick="addXp(0)" title="Toque para +1 XP">
+          <span class="squad-name">🦁 Sq 1</span>
+          <span class="squad-score" id="xp-0">0 XP</span>
+        </div>
+        <div class="squad-btn" onclick="addXp(1)" title="Toque para +1 XP">
+          <span class="squad-name">🦅 Sq 2</span>
+          <span class="squad-score" id="xp-1">0 XP</span>
+        </div>
+        <div class="squad-btn" onclick="addXp(2)" title="Toque para +1 XP">
+          <span class="squad-name">🐬 Sq 3</span>
+          <span class="squad-score" id="xp-2">0 XP</span>
+        </div>
+        <div class="squad-btn" onclick="addXp(3)" title="Toque para +1 XP">
+          <span class="squad-name">🦊 Sq 4</span>
+          <span class="squad-score" id="xp-3">0 XP</span>
+        </div>
+      </div>
+      <button class="dock-tool-btn" onclick="toggleModal(true)">💬 Passwords & Grabbers</button>
+    </div>
+  </footer>
+
+  <!-- MODAL: CLASSROOM LANGUAGE & ATTENTION GRABBERS -->
+  <div class="modal-overlay" id="helperModal" onclick="if(event.target===this) toggleModal(false)">
+    <div class="modal-sheet">
+      <div class="modal-hdr">
+        <h2>⚡ Kit Master: Controle & Inglês de Vivência</h2>
+        <button class="close-btn" onclick="toggleModal(false)">Fechar</button>
+      </div>
+      <div class="helper-card">
+        <h3>🔊 3 Attention Grabbers (Foco em 3 Segundos)</h3>
+        <ul>
+          <li><strong>1. Call & Response:</strong> Você: <em>"Class, class!"</em> → Turma: <em>"Yes, yes!"</em></li>
+          <li><strong>2. Eyes on Me:</strong> Você: <em>"1, 2, 3, eyes on me!"</em> → Turma: <em>"1, 2, eyes on you!"</em></li>
+          <li><strong>3. Countdown + XP:</strong> <em>"Open page 6 in 5, 4, 3 (Squad 2 is ready, +1 XP!), 2, 1, Zero!"</em></li>
+        </ul>
+      </div>
+      <div class="helper-card">
+        <h3>🔑 English Passwords (Canto Esquerdo do Quadro)</h3>
+        <ul>
+          <li>1. <em>"May I go to the restroom?"</em></li>
+          <li>2. <em>"May I drink some water?"</em></li>
+          <li>3. <em>"How do you say '___' in English?"</em></li>
+          <li>4. <em>"Can you repeat that, please?"</em></li>
+          <li>5. <em>"What page are we on?"</em></li>
+          <li>6. <em>"I finished! What's next?"</em></li>
+        </ul>
+      </div>
+      <div class="helper-card">
+        <h3>🏁 Checklist de Finalização Profissional (Wrap-up)</h3>
+        <ul>
+          <li>☐ Parar a atividade 5–6 min antes do sinal (nunca ser cortado pelo sino!).</li>
+          <li>☐ Ouvir 3 a 4 alunos lendo sua produção final / Exit Ticket.</li>
+          <li>☐ Dar o Check público nas 4 Skills no quadro (Listening, Reading, Writing, Speaking).</li>
+          <li>☐ Modelar 1 exemplo da Tarefa de Casa e premiar o Squad vencedor do dia.</li>
+        </ul>
+      </div>
+      <div style="text-align:right; margin-top:6px;">
+        <button class="btn-chip" onclick="resetXp()">Zerar Placar Squad XP</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // SCHEDULE DATA (EXACT SYSTEM CLOCK INTERVALS FOR 6TH GRADE)
+    // =========================================================================
+    const SCHEDULES = {
+      mon: {
+        title: "Segunda 19/10 • Cap. 7 (Classes 1 & 2)",
+        stages: [
+          {
+            id: "mon-1",
+            block: "BLOCO 1 • CLASS 1 (08:40 às 09:20)",
+            start: "08:40",
+            end: "08:44",
+            phase: "activation",
+            phaseLabel: "ACTIVATION • ROUTINE",
+            title: "1. Power Activation (Sem Meditação na 2ª)",
+            pages: "Quadro",
+            bullets: [
+              "Receber em inglês: Date, Weather & Mood no quadro.",
+              "Apresentar os 4 Squads (Lions, Eagles, Dolphins, Foxes) e ativar os 6 cards de Classroom Language (+1 XP por uso)."
+            ],
+            script: "\"Good morning, 6th grade! Every time you use our English Passwords on the board today, your Squad earns +1 XP!\"",
+            skills: ["Listening", "Speaking"]
+          },
+          {
+            id: "mon-2",
+            start: "08:44",
+            end: "08:52",
+            phase: "presentation",
+            phaseLabel: "PRESENTATION • I DO + MICRO-P",
+            title: "2. Warm-up, Goals Map & Glossary Hunt",
+            pages: "pp. 6, 7 & 54",
+            bullets: [
+              "Warm-up: Letra inicial do nome + Animal usando a / an / some / any.",
+              "Leitura coral do Goals Map (p. 7) + apresentar as 8 histórias reais de animais heróis (pp. 6–7).",
+              "Busca relâmpago no Glossary (p. 54): guide dog, rescue, calf, parrot, snake."
+            ],
+            script: "[I DO Model]: \"My name is Bruno (B): I see A Bear, AN Elephant, and SOME Dogs! Open p. 54 in 5, 4, 3, 2, 1! Repeat: Guide dog! Rescue! Calf!\"",
+            skills: ["Listening", "Reading", "Speaking"]
+          },
+          {
+            id: "mon-3",
+            start: "08:52",
+            end: "09:03",
+            phase: "practice",
+            phaseLabel: "PRACTICE • WE DO → YOU DO TOGETHER",
+            title: "3. Scanning 8 Stories & Boarding in Pairs",
+            pages: "pp. 6 & 7",
+            bullets: [
+              "We Do: Ler juntos as legendas 1 (cão-guia) e 5 (gata/bebê) sublinhando palavras-chave.",
+              "You Do Together (Duplas): Ler as demais legendas e responder ao box Boarding (p. 6) usando os Sentence Frames do quadro."
+            ],
+            script: "[Board Frame]: \"Story #[1-8] touched me the most because the [animal] saved a [person].\" | \"We can learn [loyalty/teamwork/bravery] from the [animal].\"",
+            skills: ["Reading", "Speaking", "Listening"]
+          },
+          {
+            id: "mon-4",
+            start: "09:03",
+            end: "09:14",
+            phase: "production",
+            phaseLabel: "PRODUCTION • SQUAD POSTER",
+            title: "4. Cartaz Coletivo: Lessons from Animals",
+            pages: "Cartolina / p. 7",
+            bullets: [
+              "Dividir o cartaz nos 4 Squads: Sq 1 Ant (Teamwork), Sq 2 Dog (Loyalty), Sq 3 Cat (Independence), Sq 4 Lion/Whale (Bravery).",
+              "Cada equipe escreve e ilustra 2 frases completas em inglês sobre a lição que aprendemos com o animal."
+            ],
+            script: "[I DO Model]: \"The ant teaches us teamwork because it works together. The dog teaches us loyalty because it is brave and faithful.\"",
+            skills: ["Writing", "Reading"]
+          },
+          {
+            id: "mon-5",
+            start: "09:14",
+            end: "09:20",
+            phase: "wrapup",
+            phaseLabel: "🔔 WRAP-UP CLASS 1 (ANTES DO RECREIO)",
+            title: "5. Finalização do Bloco 1 & Apresentação Rápida",
+            pages: "Fechamento 1",
+            bullets: [
+              "Attention Grabber (\"Class, class!\" → \"Yes, yes!\") faltando 6 min para o sino.",
+              "1 representante de cada Squad lê a frase do cartaz em voz alta (1 min por equipe).",
+              "Dar Check nas 4 Skills do Bloco 1 no quadro e liberar pontualmente às 09:20!"
+            ],
+            script: "\"Hands up and freeze in 3, 2, 1! Let's hear 1 awesome sentence from each Squad before our break!\"",
+            skills: ["Speaking", "Listening", "Writing", "Reading"]
+          },
+          {
+            id: "mon-break",
+            block: "INTERVALO / RECREIO (09:20 às 09:40)",
+            start: "09:20",
+            end: "09:40",
+            phase: "break",
+            phaseLabel: "⏸️ INTERVALO (20 MIN)",
+            title: "Intervalo • Preparação Rápida do Bloco 2",
+            pages: "09:20 – 09:40",
+            bullets: [
+              "Descansar / tomar água.",
+              "Nos últimos 2 min (09:38): deixar aberto na TV o vídeo do QR Code da pág. 8 (Grace & Lily + Guide Dog at Work) e anotar o Sentence Frame da pág. 9 no quadro."
+            ],
+            script: "Próximo bloco inicia exatamente às 09:40 com a Class 2 (págs. 8, 9, 10 e 57).",
+            skills: []
+          },
+          {
+            id: "mon-6",
+            block: "BLOCO 2 • CLASS 2 (09:40 às 10:20)",
+            start: "09:40",
+            end: "09:45",
+            phase: "activation",
+            phaseLabel: "RETORNO & WARM-UP CLASS 2",
+            title: "6. Retorno em 15s & Favorite Animal Modeling",
+            pages: "p. 8",
+            bullets: [
+              "Attention Grabber de retorno + Contagem 5-to-0 para abrir na pág. 8.",
+              "Modelar frase sobre animal favorito + adjetivo e fazer Turn & Talk de 60s em duplas."
+            ],
+            script: "[I DO Model]: \"My favorite animal is the dog because it is loyal and friendly. Turn to your partner and tell yours in 30 seconds!\"",
+            skills: ["Listening", "Speaking"]
+          },
+          {
+            id: "mon-7",
+            start: "09:45",
+            end: "09:56",
+            phase: "presentation",
+            phaseLabel: "PRESENTATION • VÍDEO & VALUES PATH",
+            title: "7. Proverbs 12:10, QR Code Video & Lost Sheep",
+            pages: "p. 8",
+            bullets: [
+              "Ler Provérbios 12:10 no Values Path (p. 8).",
+              "Dar 2 perguntas de Pre-Listening e tocar o vídeo do QR Code (Grace & Lily falando do novo cão mascote) + vídeo 'Guide Dog at Work'.",
+              "Ler e comentar o box In His Hands (Parábola da Ovelha Perdida, Mateus 18:10–14)."
+            ],
+            script: "[Pre-Listening]: \"Listen for 2 things: (1) What animal is the new school mascot? (2) How do Grace and Lily feel about it?\"",
+            skills: ["Listening", "Reading", "Speaking"]
+          },
+          {
+            id: "mon-8",
+            start: "09:56",
+            end: "10:08",
+            phase: "practice",
+            phaseLabel: "PRACTICE • WE DO → YOU DO TOGETHER",
+            title: "8. Activity 3: Values Quiz (Caring for Animals)",
+            pages: "p. 9",
+            bullets: [
+              "Ensinar as 5 palavras-chave: Responsibility, Empathy, Needs, Respect, Patience.",
+              "Resolver a Questão 1 juntos (We Do). Em duplas (You Do Together), resolver e justificar oralmente as Questões 2 a 5."
+            ],
+            script: "[Board Frame]: \"In question [2], I chose letter [A/B/C] because pets need [responsibility / empathy / patience / respect].\"",
+            skills: ["Reading", "Writing", "Speaking"]
+          },
+          {
+            id: "mon-9",
+            start: "10:08",
+            end: "10:15",
+            phase: "production",
+            phaseLabel: "PRODUCTION • YOU DO ALONE (EXIT TICKET)",
+            title: "9. Exit Ticket Individual (Avaliação Formativa)",
+            pages: "Post-it / Caderno",
+            bullets: [
+              "Trabalho 100% autônomo (You Do Alone): cada aluno escreve 2 frases completas no Post-it sem ajuda do colega.",
+              "Ouvir 4 alunos lendo seu Exit Ticket em voz alta e colar no quadro!"
+            ],
+            script: "[Exit Ticket Prompts]: 1) \"My favorite animal story is about the ___ because it is ___.\" | 2) \"To care for animals, we must show ___ and ___.\"",
+            skills: ["Writing", "Speaking", "Listening"]
+          },
+          {
+            id: "mon-10",
+            start: "10:15",
+            end: "10:20",
+            phase: "wrapup",
+            phaseLabel: "🏁 WRAP-UP FINAL & HOMEWORK BRIEFING",
+            title: "10. Fechamento Master + Tarefas (pp. 57 e 10)",
+            pages: "pp. 57 & 10",
+            bullets: [
+              "Modelar ao vivo a linha 1 da Pet Survey (Activity 2, p. 57) entrevistando 1 aluno da sala.",
+              "Explicar a pesquisa sobre raposas (Activity 5, p. 10) para quarta-feira.",
+              "Dar o Check final nas 4 Skills no quadro (Listening ☑ Reading ☑ Writing ☑ Speaking ☑) e anunciar o Squad campeão!"
+            ],
+            script: "\"Open page 57! Look how I interview Lucas for line 1: 'Do you have a pet? What is your favorite pet?' Complete 8 interviews at home!\"",
+            skills: ["Reading", "Writing", "Speaking", "Listening"]
+          }
+        ]
+      },
+      wed: {
+        title: "Quarta 21/10 • Cap. 7, Class 3 (08:40–09:20)",
+        stages: [
+          {
+            id: "wed-1",
+            block: "AULA ÚNICA • CLASS 3 (08:40 às 09:20)",
+            start: "08:40",
+            end: "08:48",
+            phase: "activation",
+            phaseLabel: "MEDITAÇÃO & ATIVAÇÃO (8 MIN)",
+            title: "1. Meditação Matinal + Check da Pet Survey",
+            pages: "p. 57",
+            bullets: [
+              "Meditação curta + música + oração em inglês + Data no calendário.",
+              "3 alunos compartilham o resultado da Pet Survey (p. 57)."
+            ],
+            script: "\"In my survey, the most popular pet is the [dog/cat].\"",
+            skills: ["Listening", "Speaking"]
+          },
+          {
+            id: "wed-2",
+            start: "08:48",
+            end: "08:56",
+            phase: "presentation",
+            phaseLabel: "PRESENTATION • I DO",
+            title: "2. Animal Adaptations & Dictionary Race",
+            pages: "pp. 10 & 54",
+            bullets: [
+              "Apresentar 8 termos científicos: mammal, species, habitat, tail, omnivore, nocturnal, camouflage, adapted.",
+              "Corrida de dicionário em duplas (3 min) + Modelar o item 1 da Activity 4 (p. 10)."
+            ],
+            script: "\"Bears, wolves, and elephants are adapted to their habitats! Let's check item 1 together.\"",
+            skills: ["Reading", "Listening"]
+          },
+          {
+            id: "wed-3",
+            start: "08:56",
+            end: "09:09",
+            phase: "practice",
+            phaseLabel: "PRACTICE • WE DO → YOU DO TOGETHER",
+            title: "3. Vídeo Foxes & Leitura 'Wild and Free' (Cut & Glue)",
+            pages: "pp. 10, 11 & 59",
+            bullets: [
+              "Completar Activity 4 + Vídeo 'All About Foxes for Kids' (Activity 5, p. 10).",
+              "Scanning de 'Wild and Free: All About Foxes' (Activity 6, pp. 10–11): recortar da p. 59 e colar Red, Arctic, Fennec e Crab-eating Fox."
+            ],
+            script: "\"Scan the text for the habitat and ear size before gluing each fox from page 59!\"",
+            skills: ["Listening", "Reading", "Writing"]
+          },
+          {
+            id: "wed-4",
+            start: "09:09",
+            end: "09:15",
+            phase: "production",
+            phaseLabel: "PRODUCTION • YOU DO ALONE",
+            title: "4. Activity 8: The Most Interesting Fox",
+            pages: "p. 11",
+            bullets: [
+              "Cada aluno escreve e fala qual das 4 espécies de raposa achou mais interessante e por quê."
+            ],
+            script: "\"I think the [Fennec Fox] is the most interesting because it has [large ears] and lives in the [desert].\"",
+            skills: ["Speaking", "Writing"]
+          },
+          {
+            id: "wed-5",
+            start: "09:15",
+            end: "09:20",
+            phase: "wrapup",
+            phaseLabel: "🏁 WRAP-UP & HOMEWORK (5 MIN)",
+            title: "5. Finalização Profissional + Tarefa Activity 7",
+            pages: "pp. 10, 11 & 54",
+            bullets: [
+              "Ouvir 3 duplas lendo sua frase da Activity 8 + Check das 4 Skills no quadro.",
+              "Explicar e modelar a Tarefa de Casa: Activity 7 (pp. 10–11 — circular todos os adjetivos do texto das raposas)."
+            ],
+            script: "\"Look at page 10: 'reddish fur' — 'reddish' is an adjective! Circle all adjectives at home for tomorrow!\"",
+            skills: ["Reading", "Writing", "Speaking", "Listening"]
+          }
+        ]
+      },
+      thu: {
+        title: "Quinta 22/10 • Cap. 7, Class 4 (08:40–09:20)",
+        stages: [
+          {
+            id: "thu-1",
+            block: "AULA ÚNICA • CLASS 4 (08:40 às 09:20)",
+            start: "08:40",
+            end: "08:48",
+            phase: "activation",
+            phaseLabel: "MEDITAÇÃO & SUFIXO -ISH (8 MIN)",
+            title: "1. Meditação + Correção Activity 7 (Suffix -ish)",
+            pages: "pp. 10 & 11",
+            bullets: [
+              "Meditação + oração + calendário.",
+              "Conferir os adjetivos circulados na Activity 7 e ensinar o sufixo -ish (reddish, brownish, greenish)."
+            ],
+            script: "\"Red + ish = Reddish (kind of red)! What is 'kind of green'? Greenish!\"",
+            skills: ["Reading", "Speaking"]
+          },
+          {
+            id: "thu-2",
+            start: "08:48",
+            end: "08:56",
+            phase: "presentation",
+            phaseLabel: "PRESENTATION • I DO",
+            title: "2. Animal Idioms & Guide Dogs Intro",
+            pages: "pp. 12 & 13",
+            bullets: [
+              "Apresentar os Animal Idioms (Activity 9, p. 12) dramatizando o sentido figurado.",
+              "Contextualizar a história dos Guide Dogs (p. 13)."
+            ],
+            script: "\"When I say 'Hold your horses!', do I have real horses? No! It means 'Wait a moment / be patient!'\"",
+            skills: ["Listening", "Reading"]
+          },
+          {
+            id: "thu-3",
+            start: "08:56",
+            end: "09:08",
+            phase: "practice",
+            phaseLabel: "PRACTICE • WE DO → YOU DO TOGETHER",
+            title: "3. Matching Idioms + Audio 1 & Video 'Forest'",
+            pages: "pp. 12 & 13",
+            bullets: [
+              "Activity 9 (p. 12): Associar os idioms às definições.",
+              "Activity 12 (p. 13): Tocar o Áudio 1 (Guide Dogs) e preencher as lacunas.",
+              "Activity 13 (p. 13): Vídeo 'A Day in the Life of Forest' + conversa em duplas com o Useful Language box."
+            ],
+            script: "\"Use the Useful Language box on page 13 to tell your partner how guide dogs help blind people!\"",
+            skills: ["Listening", "Writing", "Speaking"]
+          },
+          {
+            id: "thu-4",
+            start: "09:08",
+            end: "09:15",
+            phase: "production",
+            phaseLabel: "PRODUCTION • GAME 'AN IDIOM IN A MINUTE'",
+            title: "4. Jogo do Dado: An Idiom in a Minute",
+            pages: "p. 12",
+            bullets: [
+              "Jogar o dado (1-2 = Mímica, 3-4 = Explicar em inglês, 5-6 = Desenhar no quadro). A turma adivinha o idiom e fala uma frase!"
+            ],
+            script: "\"Roll the dice! You got 4: describe the idiom in English without saying the animal's name!\"",
+            skills: ["Speaking", "Listening"]
+          },
+          {
+            id: "thu-5",
+            start: "09:15",
+            end: "09:20",
+            phase: "wrapup",
+            phaseLabel: "🏁 WRAP-UP & HOMEWORK (5 MIN)",
+            title: "5. Finalização Profissional + Tarefas 10 e 11",
+            pages: "p. 12",
+            bullets: [
+              "Exit Ticket oral rápido com 3 idioms + Check das 4 Skills no quadro.",
+              "Explicar a Tarefa de Casa: Activity 10 (completar frases com idioms) e Activity 11 (criar 1 frase original com seu idiom favorito, p. 12)."
+            ],
+            script: "\"For homework on page 12, complete Activity 10 and write your own creative sentence in Activity 11!\"",
+            skills: ["Writing", "Reading", "Speaking", "Listening"]
+          }
+        ]
+      },
+      fri: {
+        title: "Sexta 23/10 • Cap. 7, Class 5 (08:40–09:20)",
+        stages: [
+          {
+            id: "fri-1",
+            block: "AULA ÚNICA • CLASS 5 (08:40 às 09:20)",
+            start: "08:40",
+            end: "08:48",
+            phase: "activation",
+            phaseLabel: "MEDITAÇÃO & FLASHCARDS (8 MIN)",
+            title: "1. Meditação + Correção Idioms & Scan for Fun",
+            pages: "pp. 12 & 15",
+            bullets: [
+              "Meditação + oração + calendário.",
+              "Ouvir frases da Activity 11 (p. 12) + jogo relâmpago com flashcards do QR Code 'Scan for fun' (p. 15)."
+            ],
+            script: "\"Read your favorite idiom sentence from Activity 11 to earn +1 XP for your Squad!\"",
+            skills: ["Listening", "Speaking"]
+          },
+          {
+            id: "fri-2",
+            start: "08:48",
+            end: "08:56",
+            phase: "presentation",
+            phaseLabel: "PRESENTATION • I DO",
+            title: "2. Poem 'Fading Footprints' & Animal Categories",
+            pages: "pp. 14 & 15",
+            bullets: [
+              "Ensinar horns, trunks, caves com gestos e imagens (p. 14).",
+              "Apresentar a diferença entre Endangered, Wild e Pet Animals (p. 15)."
+            ],
+            script: "\"Look at the poem title: 'Fading Footprints'. Why are their footprints fading? Because they are endangered!\"",
+            skills: ["Listening", "Reading"]
+          },
+          {
+            id: "fri-3",
+            start: "08:56",
+            end: "09:08",
+            phase: "practice",
+            phaseLabel: "PRACTICE • WE DO → YOU DO TOGETHER",
+            title: "3. Áudio 2 (Poema) + Áudio 3 & Descrição em Duplas",
+            pages: "pp. 14 & 15",
+            bullets: [
+              "Ouvir o Áudio 2 e declamar o poema por estrofes (1 estrofe por Squad!).",
+              "Ouvir e repetir o Áudio 3 (Activity 15, p. 15) + descrever os animais em duplas com 2 adjetivos (Activity 15a)."
+            ],
+            script: "[Board Frame]: \"The [macaw] is a [wild] animal. It is [colorful] and [noisy].\"",
+            skills: ["Listening", "Reading", "Speaking"]
+          },
+          {
+            id: "fri-4",
+            start: "09:08",
+            end: "09:15",
+            phase: "production",
+            phaseLabel: "PRODUCTION • YOU DO ALONE",
+            title: "4. Activity 15b: Add & Describe New Animals",
+            pages: "p. 15",
+            bullets: [
+              "Cada aluno escolhe, desenha e escreve sobre 1 novo Wild Animal e 1 novo Pet Animal na pág. 15 com 2 adjetivos cada."
+            ],
+            script: "\"Draw and write 1 new wild animal and 1 new pet animal in Activity 15b, then read your description!\"",
+            skills: ["Writing", "Speaking"]
+          },
+          {
+            id: "fri-5",
+            start: "09:15",
+            end: "09:20",
+            phase: "wrapup",
+            phaseLabel: "🏁 WRAP-UP DA SEMANA & HOMEWORK (5 MIN)",
+            title: "5. Fechamento da Semana + Tarefa Activity 14 & 17b",
+            pages: "pp. 14 & 18",
+            bullets: [
+              "Ouvir 3 alunos mostrando sua Activity 15b + Check das 4 Skills + Coroar o Squad Campeão da Semana!",
+              "Explicar a Tarefa de Casa: Activity 14 (p. 14 — circular animais no poema e escrever os nomes) + Pesquisar biomas/ameaças para Activity 17b (p. 18)."
+            ],
+            script: "\"Have a blessed weekend! Don't forget to circle the endangered animals in the poem on page 14!\"",
+            skills: ["Reading", "Writing", "Speaking", "Listening"]
+          }
+        ]
+      }
+    };
+
+    // =========================================================================
+    // STATE & STORAGE
+    // =========================================================================
+    let currentDayKey = localStorage.getItem("tracker_day") || "mon";
+    let offsetSeconds = Number(localStorage.getItem("tracker_offset") || 0);
+    let checkedSkills = JSON.parse(localStorage.getItem("tracker_skills") || "{}");
+    let squadXp = JSON.parse(localStorage.getItem("tracker_xp") || "[0,0,0,0]");
+    let lastActiveStageId = null;
+    let wakeLockSentinel = null;
+
+    function parseHmToSec(hm) {
+      const [h, m] = hm.split(":").map(Number);
+      return h * 3600 + m * 60;
+    }
+
+    function formatSecToMmSs(sec) {
+      const s = Math.max(0, Math.ceil(sec));
+      const hrs = Math.floor(s / 3600);
+      const mins = Math.floor((s % 3600) / 60);
+      const secs = s % 60;
+      if (hrs > 0) {
+        return `${hrs}h ${String(mins).padStart(2, "0")}m ${String(secs).padStart(2, "0")}s`;
+      }
+      return `${String(mins).padStart(2, "0")}m ${String(secs).padStart(2, "0")}s`;
+    }
+
+    function formatClock(secOfDay) {
+      let norm = ((Math.floor(secOfDay) % 86400) + 86400) % 86400;
+      const h = Math.floor(norm / 3600);
+      const m = Math.floor((norm % 3600) / 60);
+      const s = norm % 60;
+      return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+    }
+
+    function getEffectiveNowSec() {
+      const now = new Date();
+      const realSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds() + now.getMilliseconds() / 1000;
+      return realSec + offsetSeconds;
+    }
+
+    // Gentle beep + vibration on stage transition
+    function playTransitionAlert() {
+      try {
+        if (navigator.vibrate) navigator.vibrate([180, 90, 180]);
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+        osc.frequency.setValueAtTime(880, ctx.currentTime + 0.14); // A5
+        gain.gain.setValueAtTime(0.08, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.45);
+      } catch (e) {}
+    }
+
+    // =========================================================================
+    // RENDER TIMELINE STRUCTURE
+    // =========================================================================
+    function renderDayStructure() {
+      const dayData = SCHEDULES[currentDayKey];
+      document.getElementById("dayHeaderTitle").textContent = dayData.title;
+
+      document.querySelectorAll(".day-tab").forEach(btn => btn.classList.remove("active"));
+      const activeTab = document.getElementById(`tab-${currentDayKey}`);
+      if (activeTab) activeTab.classList.add("active");
+
+      const container = document.getElementById("timelineContainer");
+      container.innerHTML = "";
+
+      dayData.stages.forEach((st) => {
+        if (st.block) {
+          const div = document.createElement("div");
+          div.className = "block-divider";
+          div.innerHTML = `<span>${st.block}</span>`;
+          container.appendChild(div);
+        }
+
+        const startSec = parseHmToSec(st.start);
+        const endSec = parseHmToSec(st.end);
+        const durMin = Math.round((endSec - startSec) / 60);
+
+        const card = document.createElement("section");
+        card.className = "stage-bar";
+        card.id = `bar-${st.id}`;
+        card.setAttribute("data-phase", st.phase);
+
+        const skillsHtml = (st.skills || []).map(sk => {
+          const key = `${st.id}_${sk}`;
+          const isChecked = !!checkedSkills[key];
+          const icon = sk === "Listening" ? "🎧" : sk === "Reading" ? "📖" : sk === "Writing" ? "✍️" : "🗣️";
+          return `<span class="skill-chip ${isChecked ? 'checked' : ''}" onclick="toggleSkill('${key}', this)">${icon} ${sk} ${isChecked ? '✓' : ''}</span>`;
+        }).join("");
+
+        card.innerHTML = `
+          <div class="stage-fill" id="fill-${st.id}"></div>
+          <div class="stage-content">
+            <!-- TOP: Delimited Clock Window + Phase -->
+            <div class="bar-top">
+              <div class="time-window-pill">
+                <span>⏰ ${st.start} – ${st.end}</span>
+                <span class="time-duration">${durMin} min</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <button class="jump-btn" onclick="jumpToStage('${st.start}')" title="Testar/Sincronizar relógio no início desta etapa">Ir p/ ${st.start}</button>
+                <span class="phase-badge">${st.phaseLabel}</span>
+              </div>
+            </div>
+
+            <!-- BODY: Title, Pages, Bullets, Script, 4-Skills -->
+            <div class="bar-title-row">
+              <h2 class="bar-title">${st.title}</h2>
+              <span class="bar-pages">${st.pages}</span>
+            </div>
+
+            <ul class="bar-bullets">
+              ${st.bullets.map(b => `<li>${b}</li>`).join("")}
+            </ul>
+
+            <div class="script-box">
+              <strong>Quadros & Teacher Talk (Scaffolding)</strong>
+              ${st.script}
+            </div>
+
+            ${skillsHtml ? `<div class="skills-row">${skillsHtml}</div>` : ""}
+
+            <!-- FOOT: Status + Live Countdown at bottom of bar -->
+            <div class="bar-foot">
+              <div class="foot-status" id="status-${st.id}">⏳ Aguardando...</div>
+              <div class="foot-countdown" id="countdown-${st.id}">--m --s</div>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      updateTick();
+    }
+
+    // =========================================================================
+    // REAL-TIME PROGRESS & COUNTDOWN TICK
+    // =========================================================================
+    function updateTick() {
+      const nowSec = getEffectiveNowSec();
+      document.getElementById("systemClock").textContent = formatClock(nowSec);
+
+      const isSim = Math.abs(offsetSeconds) > 5;
+      const dot = document.getElementById("liveDot");
+      const modeTag = document.getElementById("modeTag");
+      const btnSim = document.getElementById("btnSimNow");
+      const btnReal = document.getElementById("btnRealClock");
+
+      if (isSim) {
+        dot.classList.add("sim");
+        modeTag.textContent = "MODO SIMULAÇÃO / AJUSTE FINO ATIVO";
+        modeTag.style.color = "#fcd34d";
+        btnSim.classList.add("active-sim");
+        btnReal.classList.remove("active-wake");
+      } else {
+        dot.classList.remove("sim");
+        modeTag.textContent = "RELÓGIO OFICIAL DO SISTEMA • 6º ANO";
+        modeTag.style.color = "var(--accent)";
+        btnSim.classList.remove("active-sim");
+        btnReal.classList.add("active-wake");
+      }
+
+      const dayData = SCHEDULES[currentDayKey];
+      let activeStage = null;
+      let nextStage = null;
+
+      dayData.stages.forEach((st) => {
+        const startSec = parseHmToSec(st.start);
+        const endSec = parseHmToSec(st.end);
+        const duration = endSec - startSec;
+
+        const barEl = document.getElementById(`bar-${st.id}`);
+        const fillEl = document.getElementById(`fill-${st.id}`);
+        const statusEl = document.getElementById(`status-${st.id}`);
+        const countEl = document.getElementById(`countdown-${st.id}`);
+
+        if (!barEl) return;
+
+        if (nowSec < startSec) {
+          // UPCOMING STAGE
+          barEl.classList.remove("is-active", "is-done");
+          fillEl.style.width = "0%";
+          const waitSec = startSec - nowSec;
+          statusEl.innerHTML = `🕒 Aguardando início (${st.start})`;
+          countEl.classList.remove("urgent");
+          countEl.innerHTML = `⏳ Inicia em ${formatSecToMmSs(waitSec)}`;
+          if (!nextStage) nextStage = { st, waitSec };
+        } else if (nowSec >= startSec && nowSec < endSec) {
+          // ACTIVE STAGE (FILLING UP IN REAL TIME)
+          barEl.classList.add("is-active");
+          barEl.classList.remove("is-done");
+          const elapsed = nowSec - startSec;
+          const remaining = endSec - nowSec;
+          const pct = Math.min(100, Math.max(0, (elapsed / duration) * 100));
+          fillEl.style.width = `${pct.toFixed(2)}%`;
+
+          statusEl.innerHTML = `🔥 EM ANDAMENTO • <strong>${Math.floor(pct)}% preenchido</strong>`;
+          countEl.innerHTML = `⏱️ Regressiva: ${formatSecToMmSs(remaining)}`;
+
+          if (remaining <= 60) {
+            countEl.classList.add("urgent");
+          } else {
+            countEl.classList.remove("urgent");
+          }
+
+          activeStage = { st, remaining, pct };
+        } else {
+          // COMPLETED STAGE (100% FULL)
+          barEl.classList.remove("is-active");
+          barEl.classList.add("is-done");
+          fillEl.style.width = "100%";
+          statusEl.innerHTML = `✅ Etapa 100% Concluída`;
+          countEl.classList.remove("urgent");
+          countEl.innerHTML = `✓ Finalizado às ${st.end}`;
+        }
+      });
+
+      // Update Sticky Top HUD Banner
+      const hudStatus = document.getElementById("hudActiveStatus");
+      const hudTitle = document.getElementById("hudActiveTitle");
+      const hudCountdown = document.getElementById("hudActiveCountdown");
+      const hudFill = document.getElementById("hudBannerFill");
+
+      if (activeStage) {
+        hudStatus.textContent = `AGORA (${activeStage.st.start} – ${activeStage.st.end}) • ${Math.floor(activeStage.pct)}%`;
+        hudTitle.textContent = activeStage.st.title;
+        hudCountdown.textContent = `-${formatSecToMmSs(activeStage.remaining)}`;
+        hudFill.style.width = `${activeStage.pct.toFixed(1)}%`;
+
+        if (lastActiveStageId && lastActiveStageId !== activeStage.st.id) {
+          playTransitionAlert();
+          const activeEl = document.getElementById(`bar-${activeStage.st.id}`);
+          if (activeEl) {
+            activeEl.scrollIntoView({ behavior: "smooth", block: "center" });
+          }
+        }
+        lastActiveStageId = activeStage.st.id;
+      } else if (nextStage) {
+        hudStatus.textContent = `PRÓXIMA ETAPA ÀS ${nextStage.st.start}`;
+        hudTitle.textContent = nextStage.st.title;
+        hudCountdown.textContent = `em ${formatSecToMmSs(nextStage.waitSec)}`;
+        hudFill.style.width = "0%";
+        lastActiveStageId = null;
+      } else {
+        hudStatus.textContent = "AULA FINALIZADA (100%)";
+        hudTitle.textContent = "Todas as etapas e Wrap-up concluídos com sucesso!";
+        hudCountdown.textContent = "✓ 100%";
+        hudFill.style.width = "100%";
+        lastActiveStageId = null;
+      }
+    }
+
+    // =========================================================================
+    // INTERACTIONS & HELPERS
+    // =========================================================================
+    function selectDay(dayKey) {
+      currentDayKey = dayKey;
+      localStorage.setItem("tracker_day", dayKey);
+      renderDayStructure();
+    }
+
+    function startSimulationNow() {
+      const now = new Date();
+      const realSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+      const targetStart = parseHmToSec("08:40");
+      offsetSeconds = targetStart - realSec;
+      localStorage.setItem("tracker_offset", String(offsetSeconds));
+      lastActiveStageId = null;
+      updateTick();
+    }
+
+    function jumpToStage(hmString) {
+      const now = new Date();
+      const realSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+      const targetSec = parseHmToSec(hmString);
+      offsetSeconds = targetSec - realSec;
+      localStorage.setItem("tracker_offset", String(offsetSeconds));
+      lastActiveStageId = null;
+      updateTick();
+    }
+
+    function resetToRealClock() {
+      offsetSeconds = 0;
+      localStorage.setItem("tracker_offset", "0");
+      lastActiveStageId = null;
+      updateTick();
+    }
+
+    function shiftOffset(deltaSec) {
+      offsetSeconds += deltaSec;
+      localStorage.setItem("tracker_offset", String(offsetSeconds));
+      updateTick();
+    }
+
+    function toggleSkill(key, el) {
+      checkedSkills[key] = !checkedSkills[key];
+      localStorage.setItem("tracker_skills", JSON.stringify(checkedSkills));
+      renderDayStructure();
+    }
+
+    function addXp(idx) {
+      squadXp[idx] = (squadXp[idx] || 0) + 1;
+      localStorage.setItem("tracker_xp", JSON.stringify(squadXp));
+      renderXp();
+    }
+
+    function resetXp() {
+      squadXp = [0, 0, 0, 0];
+      localStorage.setItem("tracker_xp", JSON.stringify(squadXp));
+      renderXp();
+    }
+
+    function renderXp() {
+      squadXp.forEach((val, idx) => {
+        const el = document.getElementById(`xp-${idx}`);
+        if (el) el.textContent = `${val} XP`;
+      });
+    }
+
+    function toggleModal(open) {
+      const m = document.getElementById("helperModal");
+      if (open) m.classList.add("open");
+      else m.classList.remove("open");
+    }
+
+    async function toggleWakeLock() {
+      const btn = document.getElementById("btnWakeLock");
+      if (!("wakeLock" in navigator)) {
+        alert("Seu navegador não suporta Wake Lock automático, mas a página continuará rodando normalmente.");
+        return;
+      }
+      try {
+        if (!wakeLockSentinel) {
+          wakeLockSentinel = await navigator.wakeLock.request("screen");
+          btn.classList.add("active-wake");
+          btn.textContent = "☀️ Tela Sempre Acesa (Ativo)";
+          wakeLockSentinel.addEventListener("release", () => {
+            wakeLockSentinel = null;
+            btn.classList.remove("active-wake");
+            btn.textContent = "☀️ Tela Sempre Acesa";
+          });
+        } else {
+          await wakeLockSentinel.release();
+          wakeLockSentinel = null;
+          btn.classList.remove("active-wake");
+          btn.textContent = "☀️ Tela Sempre Acesa";
+        }
+      } catch (err) {
+        console.warn(err);
+      }
+    }
+
+    // Initialize
+    renderXp();
+    renderDayStructure();
+    setInterval(updateTick, 250);
+  </script>
+</body>
+</html>
